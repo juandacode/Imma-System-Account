@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      label {
+        font-weight: bold;
+        margin: 10px 0 5px;
+      }
+      input[type="date"],
+      input[type="text"],
+      input[type="number"] {
+        width: 90%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      input[type="checkbox"] {
+        transform: scale(1.5);
+        margin: 10px;
+      }
+      button {
+        width: 100px;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        color: white;
+        cursor: pointer;
+        margin: 10px;
+      }
+      button#registrar {
+        background-color: #4CAF50; /* Verde */
+      }
+      button#cancelar {
+        background-color: #f44336; /* Rojo */
+      }
+      button:hover {
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Registrar Gasto</h2>
+    <form id="gastoForm">
+      <label for="fecha">Fecha:</label>
+      <input type="date" id="fecha" name="fecha" required>
+
+      <label for="concepto">Concepto:</label>
+      <input type="text" id="concepto" name="concepto" placeholder="Escribe el concepto" required>
+
+      <label for="monto">Monto:</label>
+      <input type="number" id="monto" name="monto" placeholder="Ingresa el monto" required>
+
+      <label>
+        <input type="checkbox" id="confirmacion">
+        Confirmo que los datos son correctos
+      </label>
+
+      <div>
+        <button type="button" id="registrar" onclick="registrarGasto()">Registrar</button>
+        <button type="button" id="cancelar" onclick="google.script.host.close()">Cancelar</button>
+      </div>
+    </form>
+
+    <div id="confirmacionModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+  background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); text-align: center;">
+  <h3 style="color: #4CAF50;">¡Éxito!</h3>
+  <p>El gasto se ha registrado correctamente.</p>
+  <button onclick="cerrarModal()" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; 
+    border-radius: 5px; cursor: pointer;">Aceptar</button>
+</div>
+
+
+  <script>
+  function registrarGasto() {
+  const fecha = document.getElementById("fecha").value;
+  const concepto = document.getElementById("concepto").value;
+  const monto = parseFloat(document.getElementById("monto").value);
+  const confirmacion = document.getElementById("confirmacion").checked;
+
+  if (!fecha || !concepto || isNaN(monto) || monto <= 0 || !confirmacion) {
+    alert("Por favor, complete todos los campos correctamente y confirme los datos.");
+    return;
+  }
+
+  google.script.run
+    .withSuccessHandler(() => {
+      mostrarModalConfirmacion(); // Llamar al modal de éxito
+    })
+    .withFailureHandler((error) => {
+      alert("Error al registrar el gasto: " + error.message);
+    })
+    .registrarGastoCaja(fecha, concepto, monto);
+}
+
+function mostrarModalConfirmacion() {
+  const modal = document.getElementById("confirmacionModal");
+  modal.style.display = "block";
+}
+
+function cerrarModal() {
+  const modal = document.getElementById("confirmacionModal");
+  modal.style.display = "none";
+  google.script.host.close(); // Cerrar el formulario después del mensaje
+}
+
+    </script>
+  </body>
+</html>
+
+
